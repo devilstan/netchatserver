@@ -220,7 +220,7 @@
 	"wx/string.h"
 	"wx/dynarray.h"
 
-1376488563 c:\sourcecode\libraries\wxwidgets2.8\include\wx\dynarray.h
+1309417976 c:\sourcecode\libraries\wxwidgets2.8\include\wx\dynarray.h
 	"wx/defs.h"
 	"wx/beforestd.h"
 	<vector>
@@ -3534,7 +3534,7 @@
 1376353202 d:\mydoc\codeblock project\netchatserver\netchatserverapp.h
 	<wx/app.h>
 
-1376475077 d:\mydoc\codeblock project\netchatserver\netchatservermain.h
+1376631266 d:\mydoc\codeblock project\netchatserver\netchatservermain.h
 	<wx/sizer.h>
 	<wx/menu.h>
 	<wx/textctrl.h>
@@ -3545,7 +3545,7 @@
 	<wx/socket.h>
 	<wx/dynarray.h>
 
-1376475883 source:d:\mydoc\codeblock project\netchatserver\netchatservermain.cpp
+1376631290 source:d:\mydoc\codeblock project\netchatserver\netchatservermain.cpp
 	"wx_pch.h"
 	"netchatserverMain.h"
 	<wx/msgdlg.h>
@@ -3572,7 +3572,7 @@
 1376353202 c:\documents and settings\administrator\桌面\netchatserver\netchatserverapp.h
 	<wx/app.h>
 
-1376490291 c:\documents and settings\administrator\桌面\netchatserver\netchatservermain.h
+1376374654 c:\documents and settings\administrator\桌面\netchatserver\netchatservermain.h
 	<wx/sizer.h>
 	<wx/menu.h>
 	<wx/textctrl.h>
@@ -3581,12 +3581,11 @@
 	<wx/frame.h>
 	<wx/statusbr.h>
 	<wx/socket.h>
-	<wx/dynarray.h>
 
 1353751060 source:c:\documents and settings\administrator\桌面\netchatserver\resource.rc
 	"wx/msw/wx.rc"
 
-1376476052 source:c:\documents and settings\administrator\桌面\netchatserver\netchatservermain.cpp
+1376404079 source:c:\documents and settings\administrator\桌面\netchatserver\netchatservermain.cpp
 	"wx_pch.h"
 	"netchatserverMain.h"
 	<wx/msgdlg.h>

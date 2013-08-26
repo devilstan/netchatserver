@@ -159,38 +159,43 @@ void netchatserverFrame::OnButton2Click(wxCommandEvent& event)
 	m_server->SetEventHandler(*this, ID_SERVER);
 	m_server->SetNotify(wxSOCKET_CONNECTION_FLAG);
 	m_server->Notify(true);
+	Button2->Enable(false);
 }
 
 void netchatserverFrame::OnServerEvent(wxSocketEvent& event)
 {
 	wxSocketBase* sock = m_server->Accept(false);
+//	m_SockArray.Add(m_server->Accept(false));
 //	.Add( server->Accept(false) );
 	switch ( event.GetSocketEvent() )
 	{
 		case wxSOCKET_CONNECTION:
 		{
-			(*TextCtrl1) << _("new client connected.") << _("\n");
+			(*TextCtrl1) << _("new connection") << _("\n");
+//			if ( i > 0 ) {
+//				wxString ttest(_("hekko"));
+//				m_sock[i-1]->Write( ttest.mb_str(wxConvUTF8), strlen(ttest.mb_str(wxConvUTF8)) );
 			break;
 		}
 		default: break;
 	}
+	m_SockArray.Add(sock);
 	sock->SetEventHandler(*this, ID_SOCKET);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG|wxSOCKET_LOST_FLAG);
 	sock->Notify(true);
-	m_SockArray.Add( sock );
-//	m_ID.Add()
+
 }
 
 
 void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 {
 	//get current incoming sock;
-	wxSocketBase* sock = event.GetSocket();
+	wxSocketBase* sock =  event.GetSocket();
 
 	switch ( event.GetSocketEvent() )
 	{
 		case wxSOCKET_INPUT:
-			(*TextCtrl1) << _("client input.") << _("\n");
+			//(*TextCtrl1) << _("client input.") << _("\n");
 			break;
 		case wxSOCKET_LOST:
 			(*TextCtrl1) << _("client disconnected.") << _("\n");
@@ -204,14 +209,33 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 		case wxSOCKET_INPUT:
 		{
 			char buf[4096] = {0};
-
 			sock->Read(buf, sizeof(buf));
             wxString str_read = wxString::FromUTF8(buf);  //收信陣列數值→字串
-            *TextCtrl1 << str_read << _("\n");
-            m_SockArray.Item(0)->Write( str_read.mb_str(wxConvUTF8), strlen(str_read.mb_str(wxConvUTF8)) );
-            RequestUserAttention();
-			//sock->Write(buf, sizeof(buf));
-			//sock->Destroy();
+
+            if ( (str_read.Len() == 6) && (m_ID.Index( str_read.c_str() ) == wxNOT_FOUND) ) {
+				m_ID.Add( str_read );
+				*TextCtrl1 << _("user ") + str_read + _(" login, Welcome!") << _("\n");
+            }else {
+            	//輸出字串
+				// *TextCtrl1 << str_read << _("\n");
+				//分析字串
+				wxString sender, user, user_text;
+				sender = str_read.Left(6); //這行需要處理
+				user = str_read.Mid(7,6);
+				user_text = sender + _(":") + str_read.Mid(13);
+
+				if ( m_ID.Index(user.c_str()) == wxNOT_FOUND ) {
+					wxString replyno8d(_("人家還沒上線啦 ㄎㄎ..."));
+					sock->Write( replyno8d.mb_str(wxConvUTF8), strlen(replyno8d.mb_str(wxConvUTF8)) );
+				}else{
+					if ( m_ID.Index(user.c_str()) < m_SockArray.Count() ) {
+						m_SockArray.Item(m_ID.Index(user.c_str()))->Write( user_text.mb_str(wxConvUTF8), strlen(user_text.mb_str(wxConvUTF8)) );
+					}else{
+						*TextCtrl1 << user + _("'s socket not found.") << _("\n");
+					}
+				}
+				//RequestUserAttention();
+            }
 			break;
 		}
 		case wxSOCKET_OUTPUT:
@@ -220,6 +244,9 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 			break;
 		case wxSOCKET_LOST:
 		{
+			int idx = m_SockArray.Index(sock);
+			m_SockArray.Remove(sock);
+			m_ID.RemoveAt(idx);
 			sock->Destroy();
 			break;
 		}

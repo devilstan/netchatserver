@@ -1,4 +1,4 @@
-﻿/***************************************************************
+/***************************************************************
  * Name:      netchatserverMain.h
  * Purpose:   Defines Application Frame
  * Author:    devilstan (devilstan@gmail.com)
@@ -23,8 +23,17 @@
 #include <wx/socket.h>
 #include <wx/dynarray.h>
 
-WX_DEFINE_ARRAY_PTR(wxSocketBase * , wxArraySocket);
-WX_DEFINE_ARRAY_LONG(long, myIDArray);
+//class mywxSocketBase: public wxSocketBase
+//{
+//	public:
+//		mywxSocketBase();
+//		~mywxSocketBase();
+//		wxString m_ID;
+//};
+
+
+
+WX_DEFINE_ARRAY_PTR(wxSocketBase *, ArrayOfSock);
 
 class netchatserverFrame: public wxFrame
 {
@@ -69,8 +78,8 @@ class netchatserverFrame: public wxFrame
         //*)
 
         wxSocketServer* m_server;
-        wxArraySocket m_SockArray;
-        myIDArray m_ID;
+        ArrayOfSock m_SockArray;
+        wxArrayString m_ID;
 
         DECLARE_EVENT_TABLE()
 };
