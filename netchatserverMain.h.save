@@ -1,4 +1,4 @@
-﻿/***************************************************************
+/***************************************************************
  * Name:      netchatserverMain.h
  * Purpose:   Defines Application Frame
  * Author:    devilstan (devilstan@gmail.com)
@@ -22,9 +22,14 @@
 
 #include <wx/socket.h>
 #include <wx/dynarray.h>
+#include "tinyxml2/tinyxml2.h"
+#include <string>
+#include <google/protobuf/message.h>
+#include "protoc/MsgPackage.pb.h"
 
-WX_DEFINE_ARRAY_PTR(wxSocketBase * , wxArraySocket);
-WX_DEFINE_ARRAY_LONG(long, myIDArray);
+using namespace std;
+
+WX_DEFINE_ARRAY_PTR(wxSocketBase *, ArrayOfSock);
 
 class netchatserverFrame: public wxFrame
 {
@@ -43,6 +48,11 @@ class netchatserverFrame: public wxFrame
 
         void OnServerEvent(wxSocketEvent& event);
         void OnSocketEvent(wxSocketEvent& event);
+        void UpdateStatusBar();
+        void SendPackage( wxSocketBase* sock, MsgPackage* package );
+        MsgPackage ReadPackage(wxSocketBase* sock);
+        std::string wxStringToString( wxString& );
+        wxString StringTowxString( const std::string& );
 
 
         //(*Identifiers(netchatserverFrame)
@@ -68,9 +78,10 @@ class netchatserverFrame: public wxFrame
         wxTextCtrl* TextCtrl1;
         //*)
 
+		int m_numClients;
         wxSocketServer* m_server;
-        wxArraySocket m_SockArray;
-        myIDArray
+        ArrayOfSock m_SockArray;
+        wxArrayString m_UserArray;
 
         DECLARE_EVENT_TABLE()
 };

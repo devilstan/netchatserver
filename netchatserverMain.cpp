@@ -60,8 +60,8 @@ const long netchatserverFrame::ID_SERVER = wxNewId();
 BEGIN_EVENT_TABLE(netchatserverFrame,wxFrame)
     //(*EventTable(netchatserverFrame)
     //*)
-    EVT_SOCKET(ID_SERVER, netchatserverFrame::OnServerEvent)
-    EVT_SOCKET(ID_SOCKET, netchatserverFrame::OnSocketEvent)
+    //EVT_SOCKET(ID_SERVER, netchatserverFrame::OnServerEvent)
+    //EVT_SOCKET(ID_SOCKET, netchatserverFrame::OnSocketEvent)
 END_EVENT_TABLE()
 
 netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
@@ -112,10 +112,10 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
     MenuBar1->Append(Menu2, _("Help"));
     SetMenuBar(MenuBar1);
     StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-    int __wxStatusBarWidths_1[1] = { -1 };
-    int __wxStatusBarStyles_1[1] = { wxSB_NORMAL };
-    StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
-    StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
+    int __wxStatusBarWidths_1[2] = { -1, -10 };
+    int __wxStatusBarStyles_1[2] = { wxSB_NORMAL, wxSB_NORMAL };
+    StatusBar1->SetFieldsCount(2,__wxStatusBarWidths_1);
+    StatusBar1->SetStatusStyles(2,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     BoxSizer1->Fit(this);
     BoxSizer1->SetSizeHints(this);
@@ -124,6 +124,11 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&netchatserverFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&netchatserverFrame::OnAbout);
     //*)
+    Connect( ID_SERVER, wxEVT_SOCKET, (wxObjectEventFunction)&netchatserverFrame::OnServerEvent );
+    Connect( ID_SOCKET, wxEVT_SOCKET, (wxObjectEventFunction)&netchatserverFrame::OnSocketEvent );
+
+    m_numClients = 0;
+    UpdateStatusBar();
 }
 
 netchatserverFrame::~netchatserverFrame()
@@ -165,25 +170,28 @@ void netchatserverFrame::OnButton2Click(wxCommandEvent& event)
 void netchatserverFrame::OnServerEvent(wxSocketEvent& event)
 {
 	wxSocketBase* sock = m_server->Accept(false);
-//	m_SockArray.Add(m_server->Accept(false));
-//	.Add( server->Accept(false) );
 	switch ( event.GetSocketEvent() )
 	{
 		case wxSOCKET_CONNECTION:
 		{
 			(*TextCtrl1) << _("new connection") << _("\n");
-//			if ( i > 0 ) {
-//				wxString ttest(_("hekko"));
-//				m_sock[i-1]->Write( ttest.mb_str(wxConvUTF8), strlen(ttest.mb_str(wxConvUTF8)) );
 			break;
 		}
 		default: break;
 	}
 	m_SockArray.Add(sock);
+//	wxString dd;
+//	dd.Printf( _("%d"), event.GetId() );
+//	wxMessageBox(dd);
 	sock->SetEventHandler(*this, ID_SOCKET);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG|wxSOCKET_LOST_FLAG);
 	sock->Notify(true);
-
+	m_numClients++;
+	UpdateStatusBar();
+	MsgPackage msgpkg_tmp;
+	msgpkg_tmp.set_m_nsock_id( (uintptr_t)sock );	//pass sock ID to client.
+	msgpkg_tmp.set_m_login_stage( 1 );				//pass login stage 1 to client.
+	SendPackage( sock, &msgpkg_tmp );				//send package.
 }
 
 
@@ -195,7 +203,6 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 	switch ( event.GetSocketEvent() )
 	{
 		case wxSOCKET_INPUT:
-			//(*TextCtrl1) << _("client input.") << _("\n");
 			break;
 		case wxSOCKET_LOST:
 			(*TextCtrl1) << _("client disconnected.") << _("\n");
@@ -208,34 +215,61 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 	{
 		case wxSOCKET_INPUT:
 		{
-			char buf[4096] = {0};
-			sock->Read(buf, sizeof(buf));
-            wxString str_read = wxString::FromUTF8(buf);  //收信陣列數值→字串
-
-            if ( (str_read.Len() == 6) && (m_ID.Index( str_read.c_str() ) == wxNOT_FOUND) ) {
-				m_ID.Add( str_read );
-				*TextCtrl1 << _("user ") + str_read + _(" login, Welcome!") << _("\n");
-            }else {
-            	//輸出字串
-				// *TextCtrl1 << str_read << _("\n");
-				//分析字串
-				wxString sender, user, user_text;
-				sender = str_read.Left(6); //這行需要處理
-				user = str_read.Mid(7,6);
-				user_text = sender + _(":") + str_read.Mid(13);
-
-				if ( m_ID.Index(user.c_str()) == wxNOT_FOUND ) {
-					wxString replyno8d(_("人家還沒上線啦 ㄎㄎ..."));
-					sock->Write( replyno8d.mb_str(wxConvUTF8), strlen(replyno8d.mb_str(wxConvUTF8)) );
-				}else{
-					if ( m_ID.Index(user.c_str()) < m_SockArray.Count() ) {
-						m_SockArray.Item(m_ID.Index(user.c_str()))->Write( user_text.mb_str(wxConvUTF8), strlen(user_text.mb_str(wxConvUTF8)) );
-					}else{
-						*TextCtrl1 << user + _("'s socket not found.") << _("\n");
+			//讀取封包
+			MsgPackage package_r = ReadPackage( sock );
+			MsgPackage package_s = package_r;	//接收封包副本
+			bool login_flag = package_r.m_login_flag();
+			if ( !login_flag ) {
+				//登入階段的封包處理
+				if ( (uintptr_t)sock == package_r.m_nsock_id() ) {
+					long id_tmp = (uintptr_t)sock;
+					(*TextCtrl1) << _("sock id 確認: OK, id = ") << id_tmp << _("\n");
+					if ( package_r.m_login_stage() == 2 ) {
+						//登入階段確認OK
+						(*TextCtrl1) << _("stage 2 確認: OK") << _("\n");
+						(*TextCtrl1) << _("登入帳號/密碼: ")
+									 << StringTowxString( package_r.m_susername() ) + _("/")
+									 << StringTowxString( package_r.m_spassword() ) << _("\n");
+						if ( true ) {
+							//假設登入成功
+							package_s.clear_m_spassword();	//清除封包密碼
+							int index_diff = m_SockArray.size() - m_UserArray.size();
+							if ( index_diff == 1 ) {
+								m_UserArray.Add( StringTowxString( package_r.m_susername() ) );
+								(*TextCtrl1) << _("sock id位置 = ") << m_SockArray.Index(sock)
+											 << _(" / 對應字串位置 = ") << m_UserArray.Index( StringTowxString( package_r.m_susername() ).c_str() )
+											 << _("\n");
+								package_s.set_m_login_stage(3);		//設定封包登入階段=3
+								package_s.set_m_login_flag(true);	//設定登入狀態(成功)
+								SendPackage(sock,&package_s);
+							}
+							else {
+								(*TextCtrl1) << _("index差太多了我不行了.") << _("\n");
+							}
+						}
 					}
+					else {
+						//登入階段確認NG
+						(*TextCtrl1) << _("stage 2 確認: NG") << _("\n");
+						package_s.clear_m_login_stage();	//重設封包登入階段=0
+						package_s.clear_m_spassword();		//清除封包密碼
+						package_s.set_m_login_flag(false);	//設定登入狀態(false)
+					}
+				} 
+				else {
+					(*TextCtrl1) << _("sock id 確認: NG") << _("\n");
+					package_s.clear_m_spassword();		//清除封包密碼
+					package_s.set_m_login_flag(false);	//設定登入狀態(false)
 				}
-				//RequestUserAttention();
-            }
+			}
+			else {
+				
+			}
+//			(*TextCtrl1) << StringTowxString( package_r.m_susername() ) 
+//						 << _("\n") 
+//						 << StringTowxString( package_r.msg() ) 
+//						 << _("\n");
+//			SendPackage( sock, &package_r );
 			break;
 		}
 		case wxSOCKET_OUTPUT:
@@ -246,11 +280,50 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 		{
 			int idx = m_SockArray.Index(sock);
 			m_SockArray.Remove(sock);
-			m_ID.RemoveAt(idx);
+			m_UserArray.RemoveAt(idx);
+			m_numClients--;
 			sock->Destroy();
 			break;
 		}
 		default:;
 	}
+	UpdateStatusBar();
 }
+
+void netchatserverFrame::UpdateStatusBar()
+{
+	wxString s;
+	s.Printf(_("%d clients connected"), m_numClients);
+	SetStatusText(s, 1);
+}
+
+void netchatserverFrame::SendPackage(wxSocketBase* sock, MsgPackage* package_tmp)
+{
+	std::string sbuffer;
+	package_tmp->SerializeToString( &sbuffer );
+	sock->Write( sbuffer.c_str(), package_tmp->ByteSize() );
+}
+
+MsgPackage netchatserverFrame::ReadPackage(wxSocketBase* sock)
+{
+	unsigned char buf[4096] = {0};
+	sock->Read(buf, sizeof(buf));
+	std::string myread((const char*)buf);
+	MsgPackage package_tmp;
+	package_tmp.ParseFromString(myread);
+	return package_tmp;
+}
+
+std::string netchatserverFrame::wxStringToString(const wxString& s)
+{
+	std::string str_tmp = std::string( s.mb_str(wxConvUTF8) );
+	return str_tmp;
+}
+
+wxString netchatserverFrame::StringTowxString(const std::string& s)
+{
+	wxString wxstr_tmp = wxString::FromUTF8( s.c_str() );
+	return wxstr_tmp;
+}
+
 

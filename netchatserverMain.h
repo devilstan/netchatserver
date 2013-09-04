@@ -22,16 +22,12 @@
 
 #include <wx/socket.h>
 #include <wx/dynarray.h>
+#include "tinyxml2/tinyxml2.h"
+#include <string>
+#include <google/protobuf/message.h>
+#include "protoc/MsgPackage.pb.h"
 
-//class mywxSocketBase: public wxSocketBase
-//{
-//	public:
-//		mywxSocketBase();
-//		~mywxSocketBase();
-//		wxString m_ID;
-//};
-
-
+using namespace std;
 
 WX_DEFINE_ARRAY_PTR(wxSocketBase *, ArrayOfSock);
 
@@ -52,6 +48,11 @@ class netchatserverFrame: public wxFrame
 
         void OnServerEvent(wxSocketEvent& event);
         void OnSocketEvent(wxSocketEvent& event);
+        void UpdateStatusBar();
+        void SendPackage( wxSocketBase* sock, MsgPackage* package );
+        MsgPackage ReadPackage(wxSocketBase* sock);
+        std::string wxStringToString( const wxString& );
+        wxString StringTowxString( const std::string& );
 
 
         //(*Identifiers(netchatserverFrame)
@@ -77,9 +78,10 @@ class netchatserverFrame: public wxFrame
         wxTextCtrl* TextCtrl1;
         //*)
 
+		int m_numClients;
         wxSocketServer* m_server;
         ArrayOfSock m_SockArray;
-        wxArrayString m_ID;
+        wxArrayString m_UserArray;
 
         DECLARE_EVENT_TABLE()
 };
