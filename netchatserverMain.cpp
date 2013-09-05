@@ -180,18 +180,22 @@ void netchatserverFrame::OnServerEvent(wxSocketEvent& event)
 		default: break;
 	}
 	m_SockArray.Add(sock);
+	m_UserArray.Add(wxString(_("dummy")));
 //	wxString dd;
 //	dd.Printf( _("%d"), event.GetId() );
 //	wxMessageBox(dd);
 	sock->SetEventHandler(*this, ID_SOCKET);
 	sock->SetNotify(wxSOCKET_INPUT_FLAG|wxSOCKET_LOST_FLAG);
 	sock->Notify(true);
+
+	MsgPackage msgpkg_tmp;
+	if ( m_numClients ) 
+		msgpkg_tmp.set_m_nindex(m_numClients);		//pass the index of sock & user array to client.
+	msgpkg_tmp.set_m_nsock_id( (uintptr_t)sock );	//pass sock ID to client.
+	msgpkg_tmp.set_m_login_stage(1);				//pass login stage 1 to client.
+	SendPackage( sock, &msgpkg_tmp );				//send package.
 	m_numClients++;
 	UpdateStatusBar();
-	MsgPackage msgpkg_tmp;
-	msgpkg_tmp.set_m_nsock_id( (uintptr_t)sock );	//pass sock ID to client.
-	msgpkg_tmp.set_m_login_stage( 1 );				//pass login stage 1 to client.
-	SendPackage( sock, &msgpkg_tmp );				//send package.
 }
 
 
@@ -233,12 +237,20 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 						if ( true ) {
 							//假設登入成功
 							package_s.clear_m_spassword();	//清除封包密碼
-							int index_diff = m_SockArray.size() - m_UserArray.size();
-							if ( index_diff == 1 ) {
-								m_UserArray.Add( StringTowxString( package_r.m_susername() ) );
-								(*TextCtrl1) << _("sock id位置 = ") << m_SockArray.Index(sock)
-											 << _(" / 對應字串位置 = ") << m_UserArray.Index( StringTowxString( package_r.m_susername() ).c_str() )
-											 << _("\n");
+							int curr_idx_of_sock = m_SockArray.Index(sock);
+							if ( curr_idx_of_sock == package_r.m_nindex() ) {	//sock index與client封包所記錄的index是否相同
+								if ( m_UserArray.Item(curr_idx_of_sock) == _("dummy") ) {	//確認是不是dummy封包
+									wxString* tmpstr = &m_UserArray[curr_idx_of_sock];
+									tmpstr->assign(StringTowxString(package_r.m_susername()));
+									(*TextCtrl1) << _("dummy → ") << m_UserArray.Item(curr_idx_of_sock);
+								}
+								else {
+
+								}
+//								m_UserArray.Add( StringTowxString( package_r.m_susername() ) );
+//								(*TextCtrl1) << _("sock id位置 = ") << m_SockArray.Index(sock)
+//											 << _(" / 對應字串位置 = ") << m_UserArray.Index( StringTowxString( package_r.m_susername() ).c_str() )
+//											 << _("\n");
 								package_s.set_m_login_stage(3);		//設定封包登入階段=3
 								package_s.set_m_login_flag(true);	//設定登入狀態(成功)
 								SendPackage(sock,&package_s);
@@ -255,7 +267,7 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 						package_s.clear_m_spassword();		//清除封包密碼
 						package_s.set_m_login_flag(false);	//設定登入狀態(false)
 					}
-				} 
+				}
 				else {
 					(*TextCtrl1) << _("sock id 確認: NG") << _("\n");
 					package_s.clear_m_spassword();		//清除封包密碼
@@ -263,11 +275,11 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 				}
 			}
 			else {
-				
+
 			}
-//			(*TextCtrl1) << StringTowxString( package_r.m_susername() ) 
-//						 << _("\n") 
-//						 << StringTowxString( package_r.msg() ) 
+//			(*TextCtrl1) << StringTowxString( package_r.m_susername() )
+//						 << _("\n")
+//						 << StringTowxString( package_r.msg() )
 //						 << _("\n");
 //			SendPackage( sock, &package_r );
 			break;

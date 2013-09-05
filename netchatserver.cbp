@@ -66,11 +66,14 @@
 		</ResourceCompiler>
 		<Linker>
 			<Add option="-mthreads" />
+			<Add option="-lprotobuf" />
 		</Linker>
 		<Unit filename="netchatserverApp.cpp" />
 		<Unit filename="netchatserverApp.h" />
 		<Unit filename="netchatserverMain.cpp" />
 		<Unit filename="netchatserverMain.h" />
+		<Unit filename="protoc/MsgPackage.pb.cc" />
+		<Unit filename="protoc/MsgPackage.pb.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
