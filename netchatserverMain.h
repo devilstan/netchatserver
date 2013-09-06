@@ -82,6 +82,7 @@ class netchatserverFrame: public wxFrame
         wxSocketServer* m_server;
         ArrayOfSock m_SockArray;
         wxArrayString m_UserArray;
+        MsgPackage package_s;
 
         DECLARE_EVENT_TABLE()
 };
