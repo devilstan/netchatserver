@@ -51,7 +51,7 @@ class netchatserverFrame: public wxFrame
         void UpdateStatusBar();
         void SendPackage( wxSocketBase* sock, MsgPackage* package );
         MsgPackage ReadPackage(wxSocketBase* sock);
-        std::string wxStringToString( wxString& );
+        std::string wxStringToString( const wxString& );
         wxString StringTowxString( const std::string& );
 
 
@@ -82,6 +82,8 @@ class netchatserverFrame: public wxFrame
         wxSocketServer* m_server;
         ArrayOfSock m_SockArray;
         wxArrayString m_UserArray;
+        MsgPackage package_s;
+        size_t m_ver;
 
         DECLARE_EVENT_TABLE()
 };

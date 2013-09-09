@@ -129,6 +129,7 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
 
     m_numClients = 0;
     UpdateStatusBar();
+    m_ver = 20130909;
 }
 
 netchatserverFrame::~netchatserverFrame()
@@ -224,7 +225,7 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 			package_s = package_r;	//接收封包副本
 			switch ( package_r.handle() ) {
 				case 0x00: //登入階段時封包處理
-					switch ( package_r.m_login_stage() ) 
+					switch ( package_r.m_login_stage() )
 					{
 						case 0:
 							(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": login stage = ") << package_r.m_login_stage() << _("\n");
@@ -235,35 +236,44 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 						case 2:
 							(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": login stage = ") << package_r.m_login_stage() << _("\n");
 							package_s.clear_m_spassword();	//清除封包密碼
-							//if ( m_SockArray.Index(sock) == package_r.m_nindex() ) {	//sock index與client封包所記錄的index是否相同
-							if ( 1 ) {
-								if ( m_UserArray.Item(m_SockArray.Index(sock)) == _("dummy") ) {	//確認是不是dummy封包
-									if ( m_UserArray.Index( StringTowxString( package_r.m_susername() ) ) == wxNOT_FOUND ) {
-										wxString* tmpstr = &m_UserArray[m_SockArray.Index(sock)];
-										tmpstr->assign(StringTowxString(package_r.m_susername()));
-										(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": dummy → ") << m_UserArray.Item(m_SockArray.Index(sock)) << _("\n");
-										package_s.set_m_login_flag(true);	//設定登入狀態(成功)
-										package_s.set_m_login_stage(3);	//設定login stage = 3
-										/**
-										傳送設定 m_login_flag
-										傳送設定 m_login_stage
-										*/
-										SendPackage(sock,&package_s);
-										//由封包的sock id紀錄轉換回去winsocketbase指標類型
-										//wxSocketBase* sock_tmp = (wxSocketBase*)(volatile uintptr_t)package_r.m_nsock_id();
-										//SendPackage(sock_tmp,&package_s);
+							if ( package_r.ver() != m_ver ) {
+								package_s.set_m_err_code(0x99);
+								package_s.clear_m_login_stage();
+								package_s.set_msg("此版本已經 out of fashion, 請更新版本再來吧");
+								SendPackage(sock,&package_s);
+								break;
+							}
+							else {
+								//if ( m_SockArray.Index(sock) == package_r.m_nindex() ) {	//sock index與client封包所記錄的index是否相同
+								if ( 1 ) {
+									if ( m_UserArray.Item(m_SockArray.Index(sock)) == _("dummy") ) {	//確認是不是dummy封包
+										if ( m_UserArray.Index( StringTowxString( package_r.m_susername() ) ) == wxNOT_FOUND ) {
+											wxString* tmpstr = &m_UserArray[m_SockArray.Index(sock)];
+											tmpstr->assign(StringTowxString(package_r.m_susername()));
+											(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": dummy → ") << m_UserArray.Item(m_SockArray.Index(sock)) << _("\n");
+											package_s.set_m_login_flag(true);	//設定登入狀態(成功)
+											package_s.set_m_login_stage(3);	//設定login stage = 3
+											/**
+											傳送設定 m_login_flag
+											傳送設定 m_login_stage
+											*/
+											SendPackage(sock,&package_s);
+											//由封包的sock id紀錄轉換回去winsocketbase指標類型
+											//wxSocketBase* sock_tmp = (wxSocketBase*)(volatile uintptr_t)package_r.m_nsock_id();
+											//SendPackage(sock_tmp,&package_s);
+										}
+										else {
+											package_s.set_m_err_code(0x01);
+											SendPackage(sock,&package_s);
+										}
 									}
 									else {
-										package_s.set_m_err_code(0x01);
-										SendPackage(sock,&package_s);
+										(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": 名稱不是dummy, = ") + m_UserArray.Item(m_SockArray.Index(sock)) << _("\n");
 									}
 								}
 								else {
-									(*TextCtrl1) << StringTowxString(package_r.m_susername()) + _(": 名稱不是dummy, = ") + m_UserArray.Item(m_SockArray.Index(sock)) << _("\n");
+									(*TextCtrl1) << _("有人離席囉...") << _("\n");
 								}
-							}
-							else {
-								(*TextCtrl1) << _("有人離席囉...") << _("\n");
 							}
 							break;
 						case 3:
@@ -284,7 +294,7 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 								傳送使用者列表 user list
 								*/
 								SendPackage(sock,&package_s);
-								
+
 								MsgPackage serverpgk;
 								serverpgk.set_m_susername("server_admin");
 								serverpgk.set_m_login_flag(true);
@@ -313,6 +323,14 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 					}
 					break;
 				case 0x69: //已登入時封包處理
+					(*TextCtrl1) << StringTowxString( package_r.m_susername() ) + _(": ") << StringTowxString( package_r.msg() ) << _("\n");
+					package_s.clear_m_starget_user();
+					for ( int i = 0; i < package_r.m_starget_user_size(); i++ ) {
+						wxString str_tmp = StringTowxString( package_r.m_starget_user(i) );
+						size_t idx_t = m_UserArray.Index( str_tmp.c_str() );
+						SendPackage( m_SockArray.Item(idx_t) ,&package_s);
+					}
+					//SendPackage(sock,&package_s);
 					break;
 				default:
 					break;
@@ -433,17 +451,18 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 			break;
 		case wxSOCKET_LOST:
 		{
-//			MsgPackage package_del = package_s;
-//			package_del.clear_m_susername();
-//			package_del.clear_m_spassword();
-//			package_del.set_m_susername("DEL0x99H");
-//			package_del.set_m_spassword("DEL0x99H");
 			int idx = m_SockArray.Index(sock);
-//			package_del.set_m_err_code(idx);
-//			for ( unsigned int i = 0; i < (m_SockArray.size() - 1); i++ ) {
-//				if ( m_SockArray.Item(i) != sock )
-//					SendPackage(m_SockArray.Item(i),&package_s);
-//			}
+			MsgPackage serverpgk;
+			serverpgk.set_m_susername("server_admin");
+			serverpgk.set_m_login_flag(true);
+			serverpgk.set_m_login_stage(6);
+			serverpgk.add_m_user_list( wxStringToString( m_UserArray.Item(idx) ) );
+			serverpgk.set_handle( 0x13 );
+			for ( ArrayOfSock::iterator it = m_SockArray.begin(); it != m_SockArray.end(); ++it ) {
+				if ( *it != sock ) {
+					SendPackage(*it,&serverpgk);
+				}
+			}
 			m_SockArray.Remove(sock);
 			m_UserArray.RemoveAt(idx);
 			m_numClients--;
