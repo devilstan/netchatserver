@@ -3423,13 +3423,15 @@
 1376353202 c:\documents and settings\administrator\my documents\my project\netchatserver\netchatserverapp.h
 	<wx/app.h>
 
-1378722943 c:\documents and settings\administrator\my documents\my project\netchatserver\netchatservermain.h
+1378983568 c:\documents and settings\administrator\my documents\my project\netchatserver\netchatservermain.h
 	<wx/sizer.h>
 	<wx/menu.h>
 	<wx/textctrl.h>
+	<wx/checkbox.h>
 	<wx/panel.h>
 	<wx/button.h>
 	<wx/frame.h>
+	<wx/timer.h>
 	<wx/statusbr.h>
 	<wx/socket.h>
 	<wx/dynarray.h>
@@ -3509,7 +3511,7 @@
 	<android/log.h>
 	<assert.h>
 
-1378723006 c:\documents and settings\administrator\my documents\my project\netchatserver\protoc\msgpackage.pb.h
+1378726994 c:\documents and settings\administrator\my documents\my project\netchatserver\protoc\msgpackage.pb.h
 	<string>
 	<google/protobuf/stubs/common.h>
 	<google/protobuf/generated_message_util.h>
@@ -3518,7 +3520,7 @@
 	<google/protobuf/extension_set.h>
 	<google/protobuf/unknown_field_set.h>
 
-1378723006 source:c:\documents and settings\administrator\my documents\my project\netchatserver\protoc\msgpackage.pb.cc
+1378726994 source:c:\documents and settings\administrator\my documents\my project\netchatserver\protoc\msgpackage.pb.cc
 	"MsgPackage.pb.h"
 	<algorithm>
 	<google/protobuf/stubs/common.h>
@@ -3557,7 +3559,7 @@
 	<stddef.h>
 	<cstddef>
 
-1378724166 source:c:\documents and settings\administrator\my documents\my project\netchatserver\netchatservermain.cpp
+1378984037 source:c:\documents and settings\administrator\my documents\my project\netchatserver\netchatservermain.cpp
 	"wx_pch.h"
 	"netchatserverMain.h"
 	<wx/msgdlg.h>
@@ -3581,13 +3583,15 @@
 1376353202 p:\tmpe\000448\netchatserver\netchatserverapp.h
 	<wx/app.h>
 
-1378452888 p:\tmpe\000448\netchatserver\netchatservermain.h
+1378952515 p:\tmpe\000448\netchatserver\netchatservermain.h
 	<wx/sizer.h>
 	<wx/menu.h>
 	<wx/textctrl.h>
+	<wx/checkbox.h>
 	<wx/panel.h>
 	<wx/button.h>
 	<wx/frame.h>
+	<wx/timer.h>
 	<wx/statusbr.h>
 	<wx/socket.h>
 	<wx/dynarray.h>
@@ -3612,7 +3616,7 @@
 	<android/log.h>
 	<assert.h>
 
-1378470986 p:\tmpe\000448\netchatserver\protoc\msgpackage.pb.h
+1378726994 p:\tmpe\000448\netchatserver\protoc\msgpackage.pb.h
 	<string>
 	<google/protobuf/stubs/common.h>
 	<google/protobuf/generated_message_util.h>
@@ -3621,7 +3625,7 @@
 	<google/protobuf/extension_set.h>
 	<google/protobuf/unknown_field_set.h>
 
-1378470986 source:p:\tmpe\000448\netchatserver\protoc\msgpackage.pb.cc
+1378726994 source:p:\tmpe\000448\netchatserver\protoc\msgpackage.pb.cc
 	"MsgPackage.pb.h"
 	<algorithm>
 	<google/protobuf/stubs/common.h>
@@ -3637,6 +3641,100 @@
 	"wx/msw/wx.rc"
 
 1373189820 source:p:\tmpe\000448\netchatserver\tinyxml2\tinyxml2.cpp
+	"tinyxml2.h"
+	<new>
+	<stddef.h>
+	<cstddef>
+
+1378943997 source:p:\tmpe\000448\netchatserver\netchatservermain.cpp
+	"wx_pch.h"
+	"netchatserverMain.h"
+	<wx/msgdlg.h>
+	<wx/intl.h>
+	<wx/string.h>
+
+1376353202 source:e:\netchatserver\wx_pch.h
+	<wx/wxprec.h>
+	<wx/wx.h>
+
+1376353202 source:e:\netchatserver\netchatserverapp.cpp
+	"wx_pch.h"
+	"netchatserverApp.h"
+	"netchatserverMain.h"
+	<wx/image.h>
+
+1376353202 e:\netchatserver\wx_pch.h
+	<wx/wxprec.h>
+	<wx/wx.h>
+
+1376353202 e:\netchatserver\netchatserverapp.h
+	<wx/app.h>
+
+1378983570 e:\netchatserver\netchatservermain.h
+	<wx/sizer.h>
+	<wx/menu.h>
+	<wx/textctrl.h>
+	<wx/checkbox.h>
+	<wx/panel.h>
+	<wx/button.h>
+	<wx/frame.h>
+	<wx/timer.h>
+	<wx/statusbr.h>
+	<wx/socket.h>
+	<wx/dynarray.h>
+	"tinyxml2/tinyxml2.h"
+	<string>
+	<google/protobuf/message.h>
+	"protoc/MsgPackage.pb.h"
+
+1373189820 e:\netchatserver\tinyxml2\tinyxml2.h
+	<ctype.h>
+	<limits.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<stdarg.h>
+	<cctype>
+	<climits>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<cstdarg>
+	<android/log.h>
+	<assert.h>
+
+1378726994 e:\netchatserver\protoc\msgpackage.pb.h
+	<string>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/generated_message_util.h>
+	<google/protobuf/message.h>
+	<google/protobuf/repeated_field.h>
+	<google/protobuf/extension_set.h>
+	<google/protobuf/unknown_field_set.h>
+
+1378984038 source:e:\netchatserver\netchatservermain.cpp
+	"wx_pch.h"
+	"netchatserverMain.h"
+	<wx/msgdlg.h>
+	<wx/intl.h>
+	<wx/string.h>
+
+1378726994 source:e:\netchatserver\protoc\msgpackage.pb.cc
+	"MsgPackage.pb.h"
+	<algorithm>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/stubs/once.h>
+	<google/protobuf/io/coded_stream.h>
+	<google/protobuf/wire_format_lite_inl.h>
+	<google/protobuf/descriptor.h>
+	<google/protobuf/generated_message_reflection.h>
+	<google/protobuf/reflection_ops.h>
+	<google/protobuf/wire_format.h>
+
+1353751060 source:e:\netchatserver\resource.rc
+	"wx/msw/wx.rc"
+
+1373189820 source:e:\netchatserver\tinyxml2\tinyxml2.cpp
 	"tinyxml2.h"
 	<new>
 	<stddef.h>

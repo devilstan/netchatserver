@@ -47,11 +47,13 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 const long netchatserverFrame::ID_BUTTON2 = wxNewId();
 const long netchatserverFrame::ID_TEXTCTRL1 = wxNewId();
 const long netchatserverFrame::ID_TEXTCTRL2 = wxNewId();
-const long netchatserverFrame::ID_BUTTON1 = wxNewId();
+const long netchatserverFrame::ID_CHECKBOX1 = wxNewId();
+const long netchatserverFrame::ID_TEXTCTRL3 = wxNewId();
 const long netchatserverFrame::ID_PANEL1 = wxNewId();
 const long netchatserverFrame::ID_MENUITEM1 = wxNewId();
 const long netchatserverFrame::idMenuAbout = wxNewId();
 const long netchatserverFrame::ID_STATUSBAR1 = wxNewId();
+const long netchatserverFrame::ID_TIMER1 = wxNewId();
 //*)
 
 const long netchatserverFrame::ID_SOCKET = wxNewId();
@@ -72,6 +74,8 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem1;
     wxBoxSizer* BoxSizer2;
     wxMenu* Menu1;
+    wxGridSizer* GridSizer1;
+    wxGridSizer* GridSizer3;
     wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
     wxStaticBoxSizer* StaticBoxSizer1;
@@ -79,23 +83,32 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
     wxMenu* Menu2;
 
     Create(parent, wxID_ANY, _("ICQQ SERVER"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
+    SetClientSize(wxSize(400,600));
+    SetMinSize(wxSize(400,400));
     BoxSizer1 = new wxBoxSizer(wxVERTICAL);
     Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     BoxSizer2 = new wxBoxSizer(wxVERTICAL);
-    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Label"));
+    StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Server Control Settings"));
     Button2 = new wxButton(Panel1, ID_BUTTON2, _("SERVER START"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     StaticBoxSizer1->Add(Button2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     BoxSizer2->Add(StaticBoxSizer1, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    GridSizer1 = new wxGridSizer(0, 1, 0, 0);
+    TextCtrl1 = new wxTextCtrl(Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    GridSizer1->Add(TextCtrl1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    BoxSizer2->Add(GridSizer1, 2, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
-    TextCtrl1 = new wxTextCtrl(Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(354,241), wxTE_MULTILINE, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    BoxSizer3->Add(TextCtrl1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    BoxSizer4 = new wxBoxSizer(wxVERTICAL);
+    TextCtrl2 = new wxTextCtrl(Panel1, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_MULTILINE|wxHSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    BoxSizer4->Add(TextCtrl2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer3->Add(BoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    GridSizer3 = new wxGridSizer(0, 1, 0, 0);
+    CheckBox1 = new wxCheckBox(Panel1, ID_CHECKBOX1, _("推播"), wxDefaultPosition, wxSize(17,22), 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+    CheckBox1->SetValue(false);
+    GridSizer3->Add(CheckBox1, 0, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    TextCtrl3 = new wxTextCtrl(Panel1, ID_TEXTCTRL3, _("10"), wxDefaultPosition, wxSize(43,22), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+    GridSizer3->Add(TextCtrl3, 0, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    BoxSizer3->Add(GridSizer3, 0, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     BoxSizer2->Add(BoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    BoxSizer4 = new wxBoxSizer(wxHORIZONTAL);
-    TextCtrl2 = new wxTextCtrl(Panel1, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxSize(269,45), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-    BoxSizer4->Add(TextCtrl2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    Button1 = new wxButton(Panel1, ID_BUTTON1, _("傳送你妹\n我還沒寫好"), wxDefaultPosition, wxSize(106,40), 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    BoxSizer4->Add(Button1, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    BoxSizer2->Add(BoxSizer4, 0, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel1->SetSizer(BoxSizer2);
     BoxSizer2->Fit(Panel1);
     BoxSizer2->SetSizeHints(Panel1);
@@ -117,19 +130,22 @@ netchatserverFrame::netchatserverFrame(wxWindow* parent,wxWindowID id)
     StatusBar1->SetFieldsCount(2,__wxStatusBarWidths_1);
     StatusBar1->SetStatusStyles(2,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
-    BoxSizer1->Fit(this);
-    BoxSizer1->SetSizeHints(this);
+    Timer1.SetOwner(this, ID_TIMER1);
+    SetSizer(BoxSizer1);
+    Layout();
 
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&netchatserverFrame::OnButton2Click);
+    Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&netchatserverFrame::OnCheckBox1Click);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&netchatserverFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&netchatserverFrame::OnAbout);
+    Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&netchatserverFrame::OnTimer1Trigger);
     //*)
     Connect( ID_SERVER, wxEVT_SOCKET, (wxObjectEventFunction)&netchatserverFrame::OnServerEvent );
     Connect( ID_SOCKET, wxEVT_SOCKET, (wxObjectEventFunction)&netchatserverFrame::OnSocketEvent );
 
     m_numClients = 0;
     UpdateStatusBar();
-    m_ver = 20130909;
+    m_ver = 20130912;
 }
 
 netchatserverFrame::~netchatserverFrame()
@@ -239,7 +255,7 @@ void netchatserverFrame::OnSocketEvent(wxSocketEvent& event)
 							if ( package_r.ver() != m_ver ) {
 								package_s.set_m_err_code(0x99);
 								package_s.clear_m_login_stage();
-								package_s.set_msg("此版本已經 out of fashion, 請更新版本再來吧");
+								package_s.set_msg("此版本已經 out of fashion, 請更新(ICQQ.exe)版本再來吧");
 								SendPackage(sock,&package_s);
 								break;
 							}
@@ -403,3 +419,49 @@ wxString netchatserverFrame::StringTowxString(const std::string& s)
 }
 
 
+
+void netchatserverFrame::OnCheckBox1Click(wxCommandEvent& event)
+{
+	if ( CheckBox1->IsChecked() ) {
+		TextCtrl3->Enable(false);
+		if ( !Timer1.IsRunning() )
+			m_linemsg_idx = 0;
+			long temp_t = 0;
+			TextCtrl3->GetValue().ToLong(&temp_t);
+			Timer1.Start(temp_t*60*1000);
+	}
+	else {
+		TextCtrl3->Enable(true);
+		if ( Timer1.IsRunning() )
+			Timer1.Stop();
+	}
+}
+
+void netchatserverFrame::OnTimer1Trigger(wxTimerEvent& event)
+{
+	MsgPackage serverpgk;
+	serverpgk.set_m_susername("server_admin");
+	serverpgk.set_m_login_flag(true);
+	serverpgk.set_m_login_stage(6);
+	serverpgk.set_handle( 0x16 );
+
+	if ( !TextCtrl2->IsEmpty() ) {
+		if ( m_linemsg_idx < TextCtrl2->GetNumberOfLines() ) {
+			serverpgk.set_msg( wxStringToString( TextCtrl2->GetLineText(m_linemsg_idx) ) );
+			int userindex = 0;
+			for ( wxArrayString::iterator it = m_UserArray.begin(); it != m_UserArray.end(); ++it ) {
+				if ( *it != _("dummy") ) {
+					SendPackage(m_SockArray.Item((size_t)userindex),&serverpgk);
+				}
+				userindex++;
+			}
+			TextCtrl1->WriteText( TextCtrl2->GetLineText(m_linemsg_idx) );
+			TextCtrl1->WriteText( _("\n") );
+			m_linemsg_idx++;
+			if ( m_linemsg_idx == TextCtrl2->GetNumberOfLines() ) m_linemsg_idx = 0;
+		}
+		else {
+			m_linemsg_idx = 0;
+		}
+	}
+}
